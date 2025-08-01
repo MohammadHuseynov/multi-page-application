@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using MultiPageApplication.ApplicationServices.Services;
+using MultiPageApplication.ApplicationServices.Services.Contracts;
 using MultiPageApplication.Models;
+using MultiPageApplication.Models.Services.Contracts;
+using MultiPageApplication.Models.Services.Repositories;
 
 #region [- Building the app object -]
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +17,12 @@ builder.Services.AddDbContext<MultiPageApplicationDbContext>(options => options.
 
 
 //AddScope goes here
+
+// This tells ASP.NET: "When a class asks for IProductRepository, create a ProductRepository."
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+// This tells ASP.NET: "When a class asks for IProductApplicationService, create a ProductApplicationService."
+builder.Services.AddScoped<IProductApplicationService, ProductApplicationService>();
 
 
 var app = builder.Build();

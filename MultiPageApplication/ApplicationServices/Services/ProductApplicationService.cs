@@ -29,7 +29,7 @@ namespace MultiPageApplication.ApplicationServices.Services
             await _productRepository.SaveChangesAsync();
         }
 
-        public async Task<GetProductDto> GetByIdAsync(Guid id)
+        public async Task<GetProductDto> GetByIdProductAsync(Guid id)
         {
             var product = await _productRepository.SelectByIdAsync(id);
             if (product == null) return null;
@@ -43,7 +43,7 @@ namespace MultiPageApplication.ApplicationServices.Services
             };
         }
 
-        public async Task<List<GetProductDto>> GetAllAsync()
+        public async Task<List<GetProductDto>> GetAllProductAsync()
         {
             var products = await _productRepository.SelectAllAsync();
             var productDtos = new List<GetProductDto>();

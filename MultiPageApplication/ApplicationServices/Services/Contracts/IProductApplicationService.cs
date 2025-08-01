@@ -8,8 +8,9 @@ namespace MultiPageApplication.ApplicationServices.Services.Contracts
         Task PostProductDtoAsync(PostProductDto postProductDto);
 
         // READ: Methods that return the read DTO.
-        Task<GetProductDto> GetByIdAsync(Guid id); // Use Guid to match your DTOs
-        Task<List<GetProductDto>> GetAllAsync();
+        Task<GetProductDto> GetByIdProductAsync(Guid id); // Use Guid to match your DTOs
+
+        Task<List<GetProductDto>> GetAllProductAsync();
 
         // UPDATE: A method that takes the update DTO.
         Task PutProductDtoAsync(PutProductDto putProductDto);

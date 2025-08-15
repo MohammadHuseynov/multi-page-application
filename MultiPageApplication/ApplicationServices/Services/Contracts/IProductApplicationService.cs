@@ -1,21 +1,22 @@
 ﻿using MultiPageApplication.ApplicationServices.Dtos;
+using ResponseFramework;
 
 namespace MultiPageApplication.ApplicationServices.Services.Contracts
 {
     public interface IProductApplicationService
     {
-        // CREATE: A method that takes the create DTO.
-        Task PostProductDtoAsync(PostProductDto postProductDto);
+        // CREATE: return the new Product Id wrapped in a response
+        Task<IResponse<Guid>> PostProductDtoAsync(PostProductDto postProductDto);
 
-        // READ: Methods that return the read DTO.
-        Task<GetProductDto> GetByIdProductAsync(Guid id); // Use Guid to match your DTOs
+        // UPDATE: success/failure wrapped in a response
+        Task<IResponse<bool>> PutProductDtoAsync(PutProductDto putProductDto);
 
-        Task<List<GetProductDto>> GetAllProductAsync();
+        // DELETE: success/failure wrapped in a response
+        Task<IResponse<bool>> DeleteAsync(Guid id);
 
-        // UPDATE: A method that takes the update DTO.
-        Task PutProductDtoAsync(PutProductDto putProductDto);
+        // READ: return the read DTO wrapped in a response
+        Task<IResponse<GetProductDto>> GetByIdProductAsync(Guid id);
 
-        // DELETE: A method that takes the Id.
-        Task DeleteAsync(Guid id); // Use Guid
+        Task<IResponse<List<GetProductDto>>> GetAllProductAsync();
     }
 }

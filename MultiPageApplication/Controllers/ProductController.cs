@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MultiPageApplication.ApplicationServices.Dtos;
 using MultiPageApplication.ApplicationServices.Services.Contracts;
-
+using ResponseFramework;
 
 namespace MultiPageApplication.Controllers
 {
@@ -18,21 +18,24 @@ namespace MultiPageApplication.Controllers
         // GET: Products/Index
         public async Task<IActionResult> Index()
         {
-            var products = await _productApplicationService.GetAllProductAsync();
-            // You'll need to create a View for this at /Views/Product/Index.cshtml
-            return View(products);
+            var response = await _productApplicationService.GetAllProductAsync();
+            if (!response.IsSuccessful)
+            {
+                ViewBag.ErrorMessage = response.ErrorMessage ?? "An error occurred.";
+            }
+            return View(response.Result ?? new List<GetProductDto>());
         }
 
         // GET: /Product/Details/{id}
         [HttpGet]
         public async Task<IActionResult> Details(Guid id)
         {
-            var product = await _productApplicationService.GetByIdProductAsync(id);
-            if (product == null)
+            var response = await _productApplicationService.GetByIdProductAsync(id);
+            if (!response.IsSuccessful || response.Result == null)
             {
                 return NotFound();
             }
-            return View(product);
+            return View(response.Result);
         }
 
         // GET: /Product/Create
@@ -50,7 +53,12 @@ namespace MultiPageApplication.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _productApplicationService.PostProductDtoAsync(postProductDto);
+                var response = await _productApplicationService.PostProductDtoAsync(postProductDto);
+                if (!response.IsSuccessful)
+                {
+                    ModelState.AddModelError(string.Empty, response.ErrorMessage ?? "Failed to create product.");
+                    return View(postProductDto);
+                }
                 return RedirectToAction(nameof(Index));
             }
             // If model is not valid, return the view with the entered data
@@ -61,14 +69,20 @@ namespace MultiPageApplication.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)
         {
-            var product = await _productApplicationService.GetByIdProductAsync(id);
-            if (product == null)
+            var response = await _productApplicationService.GetByIdProductAsync(id);
+            if (!response.IsSuccessful || response.Result == null)
             {
                 return NotFound();
             }
-            // Return a view to edit the product
-            // Location: /Views/Product/Edit.cshtml
-            return View(product);
+            // Map GetProductDto to PutProductDto for the edit view
+            var model = new PutProductDto
+            {
+                Id = response.Result.Id,
+                Title = response.Result.Title,
+                UnitPrice = response.Result.UnitPrice,
+                Quantity = response.Result.Quantity
+            };
+            return View(model);
         }
 
         // POST: /Product/Edit/{id}
@@ -83,7 +97,12 @@ namespace MultiPageApplication.Controllers
 
             if (ModelState.IsValid)
             {
-                await _productApplicationService.PutProductDtoAsync(putProductDto);
+                var response = await _productApplicationService.PutProductDtoAsync(putProductDto);
+                if (!response.IsSuccessful)
+                {
+                    ModelState.AddModelError(string.Empty, response.ErrorMessage ?? "Failed to update product.");
+                    return View(putProductDto);
+                }
                 return RedirectToAction(nameof(Index));
             }
             // If model is not valid, return the view with the entered data
@@ -94,14 +113,14 @@ namespace MultiPageApplication.Controllers
         [HttpGet]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var product = await _productApplicationService.GetByIdProductAsync(id);
-            if (product == null)
+            var response = await _productApplicationService.GetByIdProductAsync(id);
+            if (!response.IsSuccessful || response.Result == null)
             {
                 return NotFound();
             }
             // Return a view to confirm deletion
             // Location: /Views/Product/Delete.cshtml
-            return View(product);
+            return View(response.Result);
         }
 
         // POST: /Product/Delete/{id}
@@ -109,7 +128,11 @@ namespace MultiPageApplication.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            await _productApplicationService.DeleteAsync(id);
+            var response = await _productApplicationService.DeleteAsync(id);
+            if (!response.IsSuccessful)
+            {
+                TempData["Error"] = response.ErrorMessage ?? "Failed to delete product.";
+            }
             return RedirectToAction(nameof(Index));
         }
     }

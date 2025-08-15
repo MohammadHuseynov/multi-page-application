@@ -1,23 +1,22 @@
-﻿
-namespace MultiPageApplication.Models.Services.Contracts.RepositoryFrameworks
+﻿namespace MultiPageApplication.Models.Services.Contracts.RepositoryFrameworks
 {
     public interface IRepository<TEntity> where TEntity : class
     {
         // CREATE
-        Task AddAsync(TEntity entity);
+        Task Insert(TEntity entity);
 
         // READ
-        Task<TEntity> SelectByIdAsync(object id);
+        Task<TEntity> SelectById(object id);
 
-        Task<List<TEntity>> SelectAllAsync();
+        Task<List<TEntity>> SelectAll();
 
         // UPDATE
-        Task UpdateAsync(TEntity entity);
+        Task Update(TEntity entity);
 
         // DELETE
-        Task DeleteAsync(TEntity entity);
+        Task Delete(TEntity entity);
 
-        // PERSISTENCE
+        // SAVING
         Task SaveChangesAsync();
     }
 }

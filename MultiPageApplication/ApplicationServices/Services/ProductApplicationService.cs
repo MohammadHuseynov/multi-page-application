@@ -2,7 +2,7 @@
 using MultiPageApplication.ApplicationServices.Services.Contracts;
 using MultiPageApplication.Models.DomainModels.ProductAggregates;
 using MultiPageApplication.Models.Services.Contracts;
-
+using ResponseFramework;
 
 namespace MultiPageApplication.ApplicationServices.Services
 {
@@ -15,73 +15,135 @@ namespace MultiPageApplication.ApplicationServices.Services
             _productRepository = productRepository;
         }
 
-        public async Task PostProductDtoAsync(PostProductDto postProductDto)
+        #region [- PostProductDtoAsync() -]
+        public async Task<IResponse<Guid>> PostProductDtoAsync(PostProductDto postProductDto)
         {
-            var product = new Product
+            try
             {
-                Id = Guid.NewGuid(),
-                Title = postProductDto.Title,
-                UnitPrice = postProductDto.UnitPrice,
-                Quantity = postProductDto.Quantity
-            };
+                var product = new Product
+                {
+                    Id = Guid.NewGuid(),
+                    Title = postProductDto.Title,
+                    UnitPrice = postProductDto.UnitPrice,
+                    Quantity = postProductDto.Quantity
+                };
 
-            await _productRepository.AddAsync(product);
-            await _productRepository.SaveChangesAsync();
+                await _productRepository.Insert(product);
+                await _productRepository.SaveChangesAsync();
+
+                return new Response<Guid>(product.Id);
+            }
+            catch (Exception ex)
+            {
+                return new Response<Guid>(ex.Message);
+            }
         }
+        #endregion
 
-        public async Task<GetProductDto> GetByIdProductAsync(Guid id)
+        #region [- PutProductDtoAsync() -]
+        public async Task<IResponse<bool>> PutProductDtoAsync(PutProductDto putProductDto)
         {
-            var product = await _productRepository.SelectByIdAsync(id);
-            if (product == null) return null;
-
-            return new GetProductDto
+            try
             {
-                Id = product.Id,
-                Title = product.Title,
-                UnitPrice = product.UnitPrice,
-                Quantity = product.Quantity
-            };
+                var product = await _productRepository.SelectById(putProductDto.Id);
+                if (product == null)
+                {
+                    return new Response<bool>("Product not found");
+                }
+
+                product.Title = putProductDto.Title;
+                product.UnitPrice = putProductDto.UnitPrice;
+                product.Quantity = putProductDto.Quantity;
+
+                await _productRepository.Update(product);
+                await _productRepository.SaveChangesAsync();
+
+                return new Response<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new Response<bool>(ex.Message);
+            }
         }
+        #endregion
 
-        public async Task<List<GetProductDto>> GetAllProductAsync()
+        #region [- DeleteAsync() -]
+        public async Task<IResponse<bool>> DeleteAsync(Guid id)
         {
-            var products = await _productRepository.SelectAllAsync();
-            var productDtos = new List<GetProductDto>();
-
-            foreach (var product in products)
+            try
             {
-                productDtos.Add(new GetProductDto
+                var product = await _productRepository.SelectById(id);
+                if (product == null)
+                {
+                    return new Response<bool>("Product not found");
+                }
+
+                await _productRepository.Delete(product);
+                await _productRepository.SaveChangesAsync();
+
+                return new Response<bool>(true);
+            }
+            catch (Exception ex)
+            {
+                return new Response<bool>(ex.Message);
+            }
+        }
+        #endregion
+
+        #region [- GetByIdProductAsync() -]
+        public async Task<IResponse<GetProductDto>> GetByIdProductAsync(Guid id)
+        {
+            try
+            {
+                var product = await _productRepository.SelectById(id);
+                if (product == null)
+                {
+                    return new Response<GetProductDto>("Product not found");
+                }
+
+                var dto = new GetProductDto
                 {
                     Id = product.Id,
                     Title = product.Title,
                     UnitPrice = product.UnitPrice,
                     Quantity = product.Quantity
-                });
+                };
+
+                return new Response<GetProductDto>(dto);
             }
-
-            return productDtos;
+            catch (Exception ex)
+            {
+                return new Response<GetProductDto>(ex.Message);
+            }
         }
+        #endregion
 
-        public async Task PutProductDtoAsync(PutProductDto putProductDto)
+        #region [- GetAllProductAsync() -]
+        public async Task<IResponse<List<GetProductDto>>> GetAllProductAsync()
         {
-            var product = await _productRepository.SelectByIdAsync(putProductDto.Id);
-            if (product == null) return;
+            try
+            {
+                var products = await _productRepository.SelectAll();
+                var productDtos = new List<GetProductDto>();
 
-            product.Title = putProductDto.Title;
-            product.UnitPrice = putProductDto.UnitPrice;
-            product.Quantity = putProductDto.Quantity;
+                foreach (var product in products)
+                {
+                    productDtos.Add(new GetProductDto
+                    {
+                        Id = product.Id,
+                        Title = product.Title,
+                        UnitPrice = product.UnitPrice,
+                        Quantity = product.Quantity
+                    });
+                }
 
-            await _productRepository.UpdateAsync(product);
-            await _productRepository.SaveChangesAsync();
+                return new Response<List<GetProductDto>>(productDtos);
+            }
+            catch (Exception ex)
+            {
+                return new Response<List<GetProductDto>>(ex.Message);
+            }
         }
-
-        public async Task DeleteAsync(Guid id)
-        {
-            var product = await _productRepository.SelectByIdAsync(id);
-            if (product == null) return;
-
-            await _productRepository.DeleteAsync(product);
-            await _productRepository.SaveChangesAsync();
-        }
+        #endregion
     }
 }

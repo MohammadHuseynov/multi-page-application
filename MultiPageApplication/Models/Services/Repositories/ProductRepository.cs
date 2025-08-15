@@ -14,51 +14,59 @@ namespace MultiPageApplication.Models.Services.Repositories
             _context = context;
         }
 
-      
-        public async Task AddAsync(Product product)
+        #region [- Insert() -]
+        public async Task Insert(Product product)
         {
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
-            await _context.Product.AddAsync(product);
+            await _context.AddAsync(product);
         }
+        #endregion
 
-       
-        public async Task<List<Product>> SelectAllAsync()
+        #region [- Update() -]
+        public Task Update(Product product)
         {
-            return await _context.Product.ToListAsync();
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+            _context.Update(product);
+            return Task.CompletedTask;
+        }
+        #endregion
+
+        #region [- Delete() -]
+        public Task Delete(Product product)
+        {
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+            _context.Remove(product);
+            return Task.CompletedTask;
+        }
+        #endregion
+          
+
+        #region [- SelectAllAsync() -]
+        public async Task<List<Product>> SelectAll()
+        {
+            return await _context.Product.AsNoTracking().ToListAsync();
         }
 
-    
+        #endregion
 
-        public async Task<Product> SelectByIdAsync(object id)
+        #region [- SelectByIdAsync() -]
+        public async Task<Product> SelectById(object id)
         {
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
             return await _context.Product.FindAsync(id);
         }
-
-    
-        public Task DeleteAsync(Product product)
-        {
-            if (product == null)
-                throw new ArgumentNullException(nameof(product));
-            _context.Product.Remove(product);
-            return Task.CompletedTask;
-        }
-
-      
-        public Task UpdateAsync(Product product)
-        {
-            if (product == null)
-                throw new ArgumentNullException(nameof(product));
-            _context.Product.Update(product);
-            return Task.CompletedTask;
-        }
-
-
+        #endregion
+        
+        #region [- SaveChangesAsync() -]
         public async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
         }
+        #endregion
+
     }
 }

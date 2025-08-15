@@ -14,11 +14,14 @@ namespace MultiPageApplication.Models.Services.Repositories
             _context = context;
         }
 
+
+
         #region [- Insert() -]
         public async Task Insert(Product product)
         {
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
+
             await _context.AddAsync(product);
         }
         #endregion
@@ -28,6 +31,7 @@ namespace MultiPageApplication.Models.Services.Repositories
         {
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
+
             _context.Update(product);
             return Task.CompletedTask;
         }
@@ -38,16 +42,25 @@ namespace MultiPageApplication.Models.Services.Repositories
         {
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
+
             _context.Remove(product);
             return Task.CompletedTask;
         }
         #endregion
-          
+
 
         #region [- SelectAllAsync() -]
         public async Task<List<Product>> SelectAll()
         {
-            return await _context.Product.AsNoTracking().ToListAsync();
+            try
+            {
+                return await _context.Product.AsNoTracking().ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                
+                throw new Exception("Could not retrieve products from the database.", ex);
+            }
         }
 
         #endregion
@@ -57,14 +70,32 @@ namespace MultiPageApplication.Models.Services.Repositories
         {
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
-            return await _context.Product.FindAsync(id);
+            try
+            {
+                return await _context.Product.FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+                // Re-throw as a general Exception, hiding the implementation details.
+                throw new Exception($"Could not retrieve product with ID '{id}' from the database.", ex);
+            }
+           
         }
         #endregion
-        
+
         #region [- SaveChangesAsync() -]
         public async Task SaveChangesAsync()
         {
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                
+                throw new Exception("An error occurred while saving changes to the database.", ex);
+            }
+
         }
         #endregion
 

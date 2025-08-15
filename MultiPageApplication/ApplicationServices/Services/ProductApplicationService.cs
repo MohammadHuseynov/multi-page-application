@@ -15,8 +15,9 @@ namespace MultiPageApplication.ApplicationServices.Services
             _productRepository = productRepository;
         }
 
-        #region [- PostProductDtoAsync() -]
-        public async Task<IResponse<Guid>> PostProductDtoAsync(PostProductDto postProductDto)
+
+        #region [- PostAsync() -]
+        public async Task<IResponse<Guid>> Post(PostProductDto postProductDto)
         {
             try
             {
@@ -40,8 +41,8 @@ namespace MultiPageApplication.ApplicationServices.Services
         }
         #endregion
 
-        #region [- PutProductDtoAsync() -]
-        public async Task<IResponse<bool>> PutProductDtoAsync(PutProductDto putProductDto)
+        #region [- PutAsync() -]
+        public async Task<IResponse<bool>> Put(PutProductDto putProductDto)
         {
             try
             {
@@ -68,7 +69,7 @@ namespace MultiPageApplication.ApplicationServices.Services
         #endregion
 
         #region [- DeleteAsync() -]
-        public async Task<IResponse<bool>> DeleteAsync(Guid id)
+        public async Task<IResponse<bool>> Delete(Guid id)
         {
             try
             {
@@ -89,6 +90,7 @@ namespace MultiPageApplication.ApplicationServices.Services
             }
         }
         #endregion
+
 
         #region [- GetByIdProductAsync() -]
         public async Task<IResponse<GetProductDto>> GetByIdProductAsync(Guid id)

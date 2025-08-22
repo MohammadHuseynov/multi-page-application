@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Net;
+using Microsoft.EntityFrameworkCore;
 using MultiPageApplication.Models.DomainModels.ProductAggregates;
 using MultiPageApplication.Models.Services.Contracts;
-
+using ResponseFramework;
 
 namespace MultiPageApplication.Models.Services.Repositories
 {
@@ -14,90 +15,68 @@ namespace MultiPageApplication.Models.Services.Repositories
             _context = context;
         }
 
-
-
         #region [- Insert() -]
-        public async Task Insert(Product product)
+        public async Task<IResponse<bool>> Insert(Product? product)
         {
             if (product == null)
-                throw new ArgumentNullException(nameof(product));
+                return new Response<bool>("Product cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest };
 
             await _context.AddAsync(product);
+            return new Response<bool>(true, true, "Inserting was successful", null, HttpStatusCode.Created);
         }
         #endregion
 
         #region [- Update() -]
-        public Task Update(Product product)
+        public Task<IResponse<bool>> Update(Product? product)
         {
             if (product == null)
-                throw new ArgumentNullException(nameof(product));
+                return Task.FromResult<IResponse<bool>>(new Response<bool>("Product cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest });
 
             _context.Update(product);
-            return Task.CompletedTask;
+            return Task.FromResult<IResponse<bool>>(new Response<bool>(true, true, "Updating was successful", null, HttpStatusCode.OK));
         }
         #endregion
 
         #region [- Delete() -]
-        public Task Delete(Product product)
+        public Task<IResponse<bool>> Delete(Product? product)
         {
             if (product == null)
-                throw new ArgumentNullException(nameof(product));
+                return Task.FromResult<IResponse<bool>>(new Response<bool>("Product cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest });
 
             _context.Remove(product);
-            return Task.CompletedTask;
+            return Task.FromResult<IResponse<bool>>(new Response<bool>(true, true, "Deleting was successful", null, HttpStatusCode.OK));
         }
         #endregion
 
-
         #region [- SelectAllAsync() -]
-        public async Task<List<Product>> SelectAll()
+        public async Task<IResponse<List<Product>>> SelectAll()
         {
-            try
-            {
-                return await _context.Product.AsNoTracking().ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                
-                throw new Exception("Could not retrieve products from the database.", ex);
-            }
+            var products = await _context.Product.AsNoTracking().ToListAsync();
+            return new Response<List<Product>>(products, true, "Products retrieved successfully", null, HttpStatusCode.OK);
         }
-
         #endregion
 
         #region [- SelectByIdAsync() -]
-        public async Task<Product> SelectById(object id)
+        public async Task<IResponse<Product>> SelectById(Guid? id)
         {
             if (id == null)
-                throw new ArgumentNullException(nameof(id));
-            try
-            {
-                return await _context.Product.FindAsync(id);
-            }
-            catch (Exception ex)
-            {
-                // Re-throw as a general Exception, hiding the implementation details.
-                throw new Exception($"Could not retrieve product with ID '{id}' from the database.", ex);
-            }
-           
+                return new Response<Product>("Id cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest };
+
+            var product = await _context.Product.FindAsync(id);
+
+            if (product == null)
+                return new Response<Product>(product, false, "Product not found", $"Product with ID '{id}' not found", HttpStatusCode.NotFound);
+
+            return new Response<Product>(product, true, "Product retrieved successfully", null, HttpStatusCode.OK);
         }
         #endregion
 
         #region [- SaveChangesAsync() -]
-        public async Task SaveChangesAsync()
+        public async Task<IResponse<bool>> SaveChangesAsync()
         {
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex)
-            {
-                
-                throw new Exception("An error occurred while saving changes to the database.", ex);
-            }
-
+            int affectedRows = await _context.SaveChangesAsync();
+            return new Response<bool>(true, true, $"Changes saved successfully. Affected rows: {affectedRows}", null, HttpStatusCode.OK);
         }
         #endregion
-
     }
 }

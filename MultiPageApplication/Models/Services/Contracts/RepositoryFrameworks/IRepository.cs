@@ -1,22 +1,35 @@
-﻿namespace MultiPageApplication.Models.Services.Contracts.RepositoryFrameworks
+﻿using ResponseFramework;
+
+namespace MultiPageApplication.Models.Services.Contracts.RepositoryFrameworks
 {
     public interface IRepository<TEntity> where TEntity : class
     {
+        #region [- CREATE -]
         // CREATE
-        Task Insert(TEntity entity);
+        Task<IResponse<bool>> Insert(TEntity entity);
+        #endregion
 
-        // READ
-        Task<TEntity> SelectById(object id);
-
-        Task<List<TEntity>> SelectAll();
-
+        #region [- UPDATE -]
         // UPDATE
-        Task Update(TEntity entity);
+        Task<IResponse<bool>> Update(TEntity entity);
+        #endregion
 
+        #region [- Delete -]
         // DELETE
-        Task Delete(TEntity entity);
+        Task<IResponse<bool>> Delete(TEntity entity);
+        #endregion
 
+        #region [- READ -]
+        // READ
+        Task<IResponse<TEntity>> SelectById(Guid? id);
+
+        Task<IResponse<List<TEntity>>> SelectAll();
+        #endregion
+
+        #region [- SAVE -]
         // SAVING
-        Task SaveChangesAsync();
+        Task<IResponse<bool>> SaveChangesAsync();
+        #endregion
+
     }
 }

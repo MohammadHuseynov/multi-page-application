@@ -14,7 +14,7 @@ namespace MultiPageApplication.Controllers
         {
             _productApplicationService = productApplicationService;
         }
-        
+
         #region [-// GET: Products/Index -]
         // GET: Products/Index
         public async Task<IActionResult> Index()
@@ -24,7 +24,7 @@ namespace MultiPageApplication.Controllers
             {
                 ViewBag.ErrorMessage = response.ErrorMessage ?? "An error occurred.";
             }
-            return View(response.Result ?? new List<GetProductDto>());
+            return View(response.Result ?? new GetAllProductDto());
         }
         #endregion
 
@@ -39,7 +39,7 @@ namespace MultiPageApplication.Controllers
             {
                 return NotFound();
             }
-            var response = await _productApplicationService.GetByIdProductAsync(id);
+            var response = await _productApplicationService.GetByIdProductAsync(new GetByIdProductDto { Id = id });
             if (!response.IsSuccessful || response.Result == null)
             {
                 return NotFound();
@@ -91,18 +91,19 @@ namespace MultiPageApplication.Controllers
             {
                 return NotFound();
             }
-            var response = await _productApplicationService.GetByIdProductAsync(id);
+            // Create a GetByIdProductDto instance with the provided id
+            var getByIdProductDto = new GetByIdProductDto { Id = id };
+            var response = await _productApplicationService.GetByIdProductAsync(getByIdProductDto);
             if (!response.IsSuccessful || response.Result == null)
             {
                 return NotFound();
             }
-            // Map GetProductDto to PutProductDto for the edit view
+            // Map GetByIdProductDto to PutProductDto for the edit view
             var model = new PutProductDto
             {
                 Id = response.Result.Id,
                 Title = response.Result.Title,
                 UnitPrice = response.Result.UnitPrice,
-                Quantity = response.Result.Quantity
             };
             return View(model);
         }
@@ -134,7 +135,6 @@ namespace MultiPageApplication.Controllers
         }
         #endregion
 
-
         #region [-// GET: /Product/Delete/{id} -]
         // GET: /Product/Delete/{id}
         [HttpGet]
@@ -144,7 +144,9 @@ namespace MultiPageApplication.Controllers
             {
                 return NotFound();
             }
-            var response = await _productApplicationService.GetByIdProductAsync(id);
+            // Create a GetByIdProductDto instance with the provided id
+            var getByIdProductDto = new GetByIdProductDto { Id = id };
+            var response = await _productApplicationService.GetByIdProductAsync(getByIdProductDto);
             if (!response.IsSuccessful || response.Result == null)
             {
                 return NotFound();
@@ -165,13 +167,13 @@ namespace MultiPageApplication.Controllers
             {
                 return NotFound();
             }
-            var response = await _productApplicationService.Delete(id);
+            var response = await _productApplicationService.Delete(new DeleteProductDto { Id = id });
             if (!response.IsSuccessful)
             {
                 TempData["Error"] = response.ErrorMessage ?? "Failed to delete product.";
             }
             return RedirectToAction(nameof(Index));
-        } 
+        }
         #endregion
     }
 }

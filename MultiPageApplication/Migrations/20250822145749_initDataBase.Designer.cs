@@ -12,8 +12,8 @@ using MultiPageApplication.Models;
 namespace MultiPageApplication.Migrations
 {
     [DbContext(typeof(MultiPageApplicationDbContext))]
-    [Migration("20250801100930_InitDb")]
-    partial class InitDb
+    [Migration("20250822145749_initDataBase")]
+    partial class initDataBase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -31,15 +31,12 @@ namespace MultiPageApplication.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UnitPrice")
-                        .HasColumnType("int");
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

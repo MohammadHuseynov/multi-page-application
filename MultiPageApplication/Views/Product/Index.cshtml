@@ -1,4 +1,4 @@
-﻿@model List<MultiPageApplication.ApplicationServices.Dtos.GetProductDto>
+﻿@model MultiPageApplication.ApplicationServices.Dtos.GetAllProductDto
 
 @{
     ViewData["Title"] = "Products";
@@ -10,33 +10,33 @@
     <a asp-action="Create" class="btn btn-primary">Create New Product</a>
 </p>
 
-<table class="table table-striped">
-    <thead>
-    <tr>
-        <th>Title</th>
-        <th>Unit Price</th>
-        <th>Quantity</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var item in Model)
-    {
+@if (Model != null && Model.Products.Any())
+{
+    <table class="table table-striped">
+        <thead>
         <tr>
-            <td>@Html.DisplayFor(modelItem => item.Title)</td>
-            <td>@Html.DisplayFor(modelItem => item.UnitPrice)</td>
-            <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
-                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
-            </td>
+            <th>Title</th>
+            <th>Unit Price</th>
+            <th>Actions</th>
         </tr>
-    }
-    </tbody>
-</table>
-
-@if (!Model.Any())
+        </thead>
+        <tbody>
+        @foreach (var item in Model.Products)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                <td>@Html.DisplayFor(modelItem => item.UnitPrice)</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
 {
     <div class="alert alert-info">
         <h4>No products found</h4>

@@ -12,11 +12,11 @@ namespace MultiPageApplication.ApplicationServices.Services.Contracts
         Task<IResponse<bool>> Put(PutProductDto putProductDto);
 
         // DELETE: success/failure wrapped in a response
-        Task<IResponse<bool>> Delete(Guid id);
+        Task<IResponse<bool>> Delete(DeleteProductDto deleteProductDto);
 
         // READ: return the read DTO wrapped in a response
-        Task<IResponse<GetProductDto>> GetByIdProductAsync(Guid id);
+        Task<IResponse<GetByIdProductDto>> GetByIdProductAsync(GetByIdProductDto getByIdProductDto);
 
-        Task<IResponse<List<GetProductDto>>> GetAllProductAsync();
+        Task<IResponse<GetAllProductDto>> GetAllProductAsync();
     }
 }

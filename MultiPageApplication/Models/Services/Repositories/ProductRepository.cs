@@ -22,29 +22,32 @@ namespace MultiPageApplication.Models.Services.Repositories
                 return new Response<bool>("Product cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest };
 
             await _context.AddAsync(product);
+            await SaveChangesAsync(); 
             return new Response<bool>(true, true, "Inserting was successful", null, HttpStatusCode.Created);
         }
         #endregion
 
         #region [- Update() -]
-        public Task<IResponse<bool>> Update(Product? product)
+        public async Task<IResponse<bool>> Update(Product? product)
         {
             if (product == null)
-                return Task.FromResult<IResponse<bool>>(new Response<bool>("Product cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest });
+                return new Response<bool>("Product cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest };
 
             _context.Update(product);
-            return Task.FromResult<IResponse<bool>>(new Response<bool>(true, true, "Updating was successful", null, HttpStatusCode.OK));
+            await SaveChangesAsync(); 
+            return new Response<bool>(true, true, "Updating was successful", null, HttpStatusCode.OK);
         }
         #endregion
 
         #region [- Delete() -]
-        public Task<IResponse<bool>> Delete(Product? product)
+        public async Task<IResponse<bool>> Delete(Product? product)
         {
             if (product == null)
-                return Task.FromResult<IResponse<bool>>(new Response<bool>("Product cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest });
+                return new Response<bool>("Product cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest };
 
             _context.Remove(product);
-            return Task.FromResult<IResponse<bool>>(new Response<bool>(true, true, "Deleting was successful", null, HttpStatusCode.OK));
+            await SaveChangesAsync(); 
+            return new Response<bool>(true, true, "Deleting was successful", null, HttpStatusCode.OK);
         }
         #endregion
 
@@ -71,12 +74,10 @@ namespace MultiPageApplication.Models.Services.Repositories
         }
         #endregion
 
-        #region [- SaveChangesAsync() -]
-        public async Task<IResponse<bool>> SaveChangesAsync()
+        private async Task SaveChangesAsync()
         {
-            int affectedRows = await _context.SaveChangesAsync();
-            return new Response<bool>(true, true, $"Changes saved successfully. Affected rows: {affectedRows}", null, HttpStatusCode.OK);
+            await _context.SaveChangesAsync();
         }
-        #endregion
+
     }
 }

@@ -1,13 +1,23 @@
-﻿using ResponseFramework;
+﻿using Microsoft.EntityFrameworkCore;
+using ResponseFramework;
 
 namespace MultiPageApplication.Models.Services.Contracts.RepositoryFrameworks
 {
     public interface IRepository<TEntity> where TEntity : class
     {
+
         #region [- CREATE -]
         // CREATE
         Task<IResponse<bool>> Insert(TEntity entity);
         #endregion
+
+        #region [- READ -]
+        // READ
+        Task<IResponse<TEntity>> SelectById(Guid? id);
+
+        Task<IResponse<List<TEntity>>> SelectAll();
+        #endregion
+
 
         #region [- UPDATE -]
         // UPDATE
@@ -19,17 +29,6 @@ namespace MultiPageApplication.Models.Services.Contracts.RepositoryFrameworks
         Task<IResponse<bool>> Delete(TEntity entity);
         #endregion
 
-        #region [- READ -]
-        // READ
-        Task<IResponse<TEntity>> SelectById(Guid? id);
-
-        Task<IResponse<List<TEntity>>> SelectAll();
-        #endregion
-
-        #region [- SAVE -]
-        // SAVING
-        Task<IResponse<bool>> SaveChangesAsync();
-        #endregion
 
     }
 }

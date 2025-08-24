@@ -82,7 +82,6 @@ namespace MultiPageApplication.Controllers
 
 
         #region [-// GET: /Product/Edit/{id} -]
-
         // GET: /Product/Edit/{id}
         [HttpGet]
         public async Task<IActionResult> Edit(Guid id)

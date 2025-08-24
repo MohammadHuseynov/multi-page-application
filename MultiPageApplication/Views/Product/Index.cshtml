@@ -10,7 +10,7 @@
     <a asp-action="Create" class="btn btn-primary">Create New Product</a>
 </p>
 
-@if (Model != null && Model.Products.Any())
+@if (Model != null && Model.GetByIdProductDto.Any())
 {
     <table class="table table-striped">
         <thead>
@@ -21,7 +21,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var item in Model.Products)
+            @foreach (var item in Model.GetByIdProductDto)
         {
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.Title)</td>

@@ -13,7 +13,7 @@ namespace MultiPageApplication.Models.Services.Contracts.RepositoryFrameworks
 
         #region [- READ -]
         // READ
-        Task<IResponse<TEntity>> SelectById(Guid? id);
+        Task<IResponse<TEntity>> SelectById(Guid id);
 
         Task<IResponse<List<TEntity>>> SelectAll();
         #endregion

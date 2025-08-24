@@ -16,7 +16,7 @@ namespace MultiPageApplication.Models.Services.Repositories
         }
 
         #region [- Insert() -]
-        public async Task<IResponse<bool>> Insert(Product? product)
+        public async Task<IResponse<bool>> Insert(Product product)
         {
             if (product == null)
                 return new Response<bool>("Product cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest };
@@ -28,7 +28,7 @@ namespace MultiPageApplication.Models.Services.Repositories
         #endregion
 
         #region [- Update() -]
-        public async Task<IResponse<bool>> Update(Product? product)
+        public async Task<IResponse<bool>> Update(Product product)
         {
             if (product == null)
                 return new Response<bool>("Product cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest };
@@ -40,7 +40,7 @@ namespace MultiPageApplication.Models.Services.Repositories
         #endregion
 
         #region [- Delete() -]
-        public async Task<IResponse<bool>> Delete(Product? product)
+        public async Task<IResponse<bool>> Delete(Product product)
         {
             if (product == null)
                 return new Response<bool>("Product cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest };
@@ -60,10 +60,10 @@ namespace MultiPageApplication.Models.Services.Repositories
         #endregion
 
         #region [- SelectByIdAsync() -]
-        public async Task<IResponse<Product>> SelectById(Guid? id)
+        public async Task<IResponse<Product>> SelectById(Guid id)
         {
-            if (id == null)
-                return new Response<Product>("Id cannot be null.") { HttpStatusCode = HttpStatusCode.BadRequest };
+            if (id == Guid.Empty)
+                return new Response<Product>("Id cannot be empty.") { HttpStatusCode = HttpStatusCode.BadRequest };
 
             var product = await _context.Product.FindAsync(id);
 
@@ -74,10 +74,11 @@ namespace MultiPageApplication.Models.Services.Repositories
         }
         #endregion
 
+        #region [- SaveChangesAsync() -]
         private async Task SaveChangesAsync()
         {
             await _context.SaveChangesAsync();
         }
-
+        #endregion
     }
 }

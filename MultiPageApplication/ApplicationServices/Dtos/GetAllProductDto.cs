@@ -2,6 +2,6 @@
 {
     public class GetAllProductDto
     {
-        public List<GetByIdProductDto>? Products { get; set; }
+        public List<GetByIdProductDto> GetByIdProductDto { get; set; }
     }
 }
